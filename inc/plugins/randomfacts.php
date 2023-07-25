@@ -326,8 +326,8 @@ function randomfacts_install()
         <tr>
         <td class="trow1">
             <div class="index2_randomfacts">
-                    <div class="index2_randomfacts-title">{$randomfact[\'titel\']}</div>
-                    <div class="index2_randomfacts-content">
+                    <div class="index_randomfacts-title">{$randomfact[\'titel\']}</div>
+                    <div class="index_randomfacts-content">
                         {$randomfact[\'text\']}	
                     </div>
              </div>
@@ -423,13 +423,6 @@ function randomfacts_uninstall()
       $db->delete_query('settings', "name LIKE 'randomfacts_%'");  
       $db->delete_query('settinggroups', "name = 'randomfacts'");
 
-  
-      // Datenbankspalten bei vorhandenen DBs Löschen
-  
-      if($db->table_exists('randomfacts'))
-      {
-          $db->drop_column("usergroups", "randomfacts_rights");
-      }
   
       // Eigene Tabelle erstellt löschen
   
