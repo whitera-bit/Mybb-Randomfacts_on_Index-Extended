@@ -325,7 +325,7 @@ function randomfacts_install()
         <tr><td class="tcat"><span class="smalltext"><strong>Random Facts</strong></span></td></tr>
         <tr>
         <td class="trow1">
-            <div class="index2_randomfacts">
+            <div class="index_randomfacts">
                     <div class="index_randomfacts-title">{$randomfact[\'titel\']}</div>
                     <div class="index_randomfacts-content">
                         {$randomfact[\'text\']}	
@@ -385,7 +385,23 @@ function randomfacts_install()
             
 .randomfacts-action {
       margin-top: 20px;
-}',
+}
+
+.index_randomfacts {
+
+}
+		
+.index_randomfacts-title {
+	font-size: 20px;
+	text-transform: uppercase;
+	margin-bottom: 10px;
+}
+
+.index_randomfacts-content {
+	font-size: 12px;
+}
+		
+		',
             'cachefile' => $db->escape_string(str_replace('/', '', 'randomfacts.css')),
             'lastmodified' => time(),
         );
