@@ -36,6 +36,10 @@ if($mybb->input['action'] == "all") {
     output_page($page);
 }
 
+// Ergänzen Bild auswählen
+// Ergänzen Keywords eintragen
+// Ergänzen Autor eintragen
+
 // Random Facts Eintragen
 
 if($mybb->input['action'] == "add") {
