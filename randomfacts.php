@@ -1,14 +1,14 @@
-<?php
+de<?php
 define('IN_MYBB', 1);
 require_once './global.php';
 
-add_breadcrumb("Random Facts", "randomfacts.php");
-eval("\$navigation = \"".$templates->get("randomfacts_navigation")."\";");
+add_breadcrumb("Random Facts", "randomfacts-extended.php");
+eval("\$navigation = \"".$templates->get("randomfacts-extended_navigation")."\";");
 
 
 //Hauptseite mit Erklärung
 if(!$mybb->input['action']) {
-    eval("\$page = \"".$templates->get("randomfacts")."\";");
+    eval("\$page = \"".$templates->get("randomfacts-extended")."\";");
     output_page($page);
 }
  
@@ -18,21 +18,21 @@ if(!$mybb->input['action']) {
 if($mybb->input['action'] == "all") {
     add_breadcrumb("Random Facts Übersicht");
 
-    if(is_member($mybb->settings['randomfacts_group-access']) == 1) {
+    if(is_member($mybb->settings['randomfacts-extended_group-access']) == 1) {
         error_no_permission();
      } 
 
     // Datenbankabfrage der Facts
-    $sql = "SELECT * FROM ".TABLE_PREFIX."randomfacts"; // Infos, die aus der DB aufgerufen werden
+    $sql = "SELECT * FROM ".TABLE_PREFIX."randomfacts-extended"; // Infos, die aus der DB aufgerufen werden
     $query = $db->query($sql); // Funktion führt SQL Befehl aus
 
 
     // Alle Fakten auf einer Seite ausgeben
     while($randomfacts = $db->fetch_array($query)) {
-        eval("\$randomfacts_bit .= \"".$templates->get("randomfacts_all_bit")."\";");
+        eval("\$randomfacts_bit .= \"".$templates->get("randomfacts-extended_all_bit")."\";");
       }
 
-    eval("\$page = \"".$templates->get("randomfacts_all")."\";");
+    eval("\$page = \"".$templates->get("randomfacts-extended_all")."\";");
     output_page($page);
 }
 
@@ -41,11 +41,11 @@ if($mybb->input['action'] == "all") {
 if($mybb->input['action'] == "add") {
     add_breadcrumb("Random Facts Eintragen");
     // Nur für ausgewählte Gruppen zugänglich
-    if(is_member($mybb->settings['randomfacts_group-add']) == 1) {
+    if(is_member($mybb->settings['randomfacts-extended_group-add']) == 1) {
         error_no_permission();
      } 
 
-    eval("\$page = \"".$templates->get("randomfacts_add")."\";");
+    eval("\$page = \"".$templates->get("randomfacts-extended_add")."\";");
     output_page($page);
 }
 
@@ -61,9 +61,9 @@ if($mybb->input['action'] == "do_add") {
         "text" => $db->escape_string($text)
     ];
 
-    $db->insert_query("randomfacts", $new_array); // Speichert Inhalt in DB, randomfacts = Tabellenname ohne Präfix
+    $db->insert_query("randomfacts-extended", $new_array); // Speichert Inhalt in DB, randomfacts = Tabellenname ohne Präfix
 
-    redirect("randomfacts.php?action=all");
+    redirect("randomfacts-extended.php?action=all");
 }
 
 
@@ -71,14 +71,14 @@ if($mybb->input['action'] == "do_add") {
 
 if($mybb->input['action'] == "edit") {
     // set permission
-    if(is_member($mybb->settings['randomfacts_group-edit']) == 1) {
+    if(is_member($mybb->settings['randomfacts-extended_group-edit']) == 1) {
        error_no_permission();
     }
  
      $id = $mybb->input['id'];
  
     // lese Datenbankeintrag aus, der zu der ID passt
-    $sql = "SELECT * FROM ".TABLE_PREFIX."randomfacts WHERE id = '$id'";
+    $sql = "SELECT * FROM ".TABLE_PREFIX."randomfacts-extended WHERE id = '$id'";
     $query = $db->query($sql);
     $randomfacts = $db->fetch_array($query);
 
@@ -86,7 +86,7 @@ if($mybb->input['action'] == "edit") {
  
      add_breadcrumb("randomfacts bearbeiten");
      // lade Template
-     eval("\$page = \"".$templates->get("randomfacts_edit")."\";");
+     eval("\$page = \"".$templates->get("randomfacts-extended_edit")."\";");
      output_page($page);
  } 
  
@@ -100,16 +100,16 @@ if($mybb->input['action'] == "edit") {
        "text"   => $db->escape_string($text)
     ];
  
-    $db->update_query("randomfacts", $new_array, "id = '$id'");
+    $db->update_query("randomfacts-extended", $new_array, "id = '$id'");
 
-     redirect("randomfacts.php?action=all");
+     redirect("randomfacts-extended.php?action=all");
  }
  
  if($mybb->input['action'] == "delete") {
     $id = $mybb->input['id'];
     $db->delete_query("randomfacts", "id = '$id'");
 
-    redirect("randomfacts.php?action=all");
+    redirect("randomfacts-extended.php?action=all");
  } 
 
 
