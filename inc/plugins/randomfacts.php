@@ -10,13 +10,13 @@ if(!defined("IN_MYBB"))
 function randomfacts_info()
 {
 	return array(
-		"name"		        => "Randomfacts auf dem Index",
-		"description"	    => "Erstellt eine Datenbank, in die Random Fakts oder Informationen eingetragen und dann zufällig auf dem Index ausgegeben werden können.",
+		"name"		        => "Randomfacts auf dem Index Extended",
+		"description"	    	=> "Erstellt eine Datenbank, in die Random Fakts oder Informationen eingetragen und dann zufällig auf dem Index ausgegeben werden können.",
 		"website"	        => "Webseite des Plugins (Herstellerseite)",
 		"author"	        => "White_Rabbit (Tom)",
-		"authorsite"	    => "Webseite des Erstellers",
+		"authorsite"	   	=> "Webseite des Erstellers",
 		"version"	        => "1.0",
-		"compatibility"     => "18*"
+		"compatibility"    	=> "18*"
     );
 }
 
@@ -27,10 +27,13 @@ function randomfacts_install()
     global $db, $cache, $mybb;
 
     // Neue Datenbank Tabelle hinzufügen
-    $db->query("CREATE TABLE ".TABLE_PREFIX."randomfacts (
+    $db->query("CREATE TABLE ".TABLE_PREFIX."randomfacts-extended (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `titel` varchar(140) NOT NULL,
         `text` longtext NOT NULL,
+	`keywords`,
+ 	`image`,
+  	`author`,
         PRIMARY KEY (`id`),
         KEY `id` (`id`)
         )
@@ -42,8 +45,8 @@ function randomfacts_install()
 
     $setting_group = array(
         'name'          => 'randomfacts',
-        'title'         => 'Random Facts',
-        'description'   => 'Einstellungen für die Random Facts',
+        'title'         => 'Random Facts Extended',
+        'description'   => 'Einstellungen für die Random Facts Extended',
         'disporder'     => 1,
         'isdefault'     => 0
     );
@@ -74,6 +77,46 @@ function randomfacts_install()
             'value' => '1', // Default
             'disporder' => 3
         ),
+
+	'randomfacts_images' => array(
+            'title' => 'Bilder zulassen',
+            'description' => 'Sollen Randomfacts mit einem Bild kommen? (Achtung, wenn kein Bild eingetragen wurde, wird ein Standardbild angezeigt!)',
+            'optionscode' => 'yesno',
+            'value' => '0', // Default
+            'disporder' => 4
+        ),
+
+	'randomfacts_author' => array(
+            'title' => 'Autor hinzufügen',
+            'description' => 'Soll es ein Feld geben, in dem man (von Hand) einen Autor oder Ähnliches eintragen kann?',
+            'optionscode' => 'yesno',
+            'value' => '0', // Default
+            'disporder' => 5
+        ),
+
+	'randomfacts_keywords' => array(
+            'title' => 'Keywords hinzufügen',
+            'description' => 'Soll es ein Feld geben, in dem man Keywords eintragen kann, nach denen man die Random Facts durchsuchen kann?',
+            'optionscode' => 'yesno',
+            'value' => '1', // Default
+            'disporder' => 6
+        ),
+
+	'randomfacts_keywords-index' => array(
+            'title' => 'Keywords im Randomfacts Feld anzeigen',
+            'description' => 'Sollen die Keywords auf dem Index etc. angezeigt werden?',
+            'optionscode' => 'yesno',
+            'value' => '0', // Default
+            'disporder' => 7
+        ),
+
+	'randomfacts_keywords' => array(
+            'title' => 'Keywords Trennzeichen',
+            'description' => 'Mit was für einem Zeichen sollen die Keywords voneinander getrennt werden (standardmäßig #, Leerzeichen zählen auch!)?',
+            'optionscode' => 'textfield', // CHECK
+            'value' => ' # ', // Default
+            'disporder' => 8
+        ),
     );
 
     foreach($setting_array as $name => $setting)
@@ -89,48 +132,12 @@ function randomfacts_install()
     // Templates erstellen
 
     $templategroup = array(
-        "prefix"    => "randomfacts",
-        "title"     => $db->escape_string("Random Facts"),
+        "prefix"    => "randomfacts-extended",
+        "title"     => $db->escape_string("Random Facts Extended"),
     );
 
     $db->insert_query("templategroups", $templategroup);
 
-
-    // Random Facts Übersicht
-
-    $insert_array = array(
-        'title'         => 'randomfacts',
-        'template'      => $db->escape_string('
-        <html>
-
-        <head>
-        <title>{$settings[\'bbname\']} - Random Facts</title>
-        {$headerinclude}
-        </head>
-        <body>
-        {$header}
-        <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
-            <tr>
-            <td class="thead" colspan="2"><strong>Random Facts</strong></td>
-            </tr>
-            <td class="trow1" width="25%">
-            {$navigation}
-            </td>
-            <td class="trow1" align="center">
-                Hallo, das ist ein Test!
-            </td>
-            </tr>
-        </table>
-        {$footer}
-        </body>
-        </html>
-        '),
-        'sid'           => '-2', // -1 Global, -2 Design
-        'version'       => '*',
-        'dateline'      => TIME_NOW
-    );
-
-    $db->insert_query("templates", $insert_array); // Aktualisierungsbefehl
 
     // Random Fakts alle Fakten
 
@@ -139,14 +146,14 @@ function randomfacts_install()
         'template'      => $db->escape_string('
         <html>
         <head>
-        <title>{$settings[\'bbname\']} - Random Facts</title>
+        <title>{$settings[\'bbname\']} - Random Facts Extended</title>
         {$headerinclude}
         </head>
         <body>
         {$header}
             <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
                 <tr>
-                    <td class="thead" colspan="2"><strong>Random Facts</strong></td>
+                    <td class="thead" colspan="2"><strong>Random Facts Extended</strong></td>
                 </tr>
                 <tr>
                     <td class="trow1" width="25%" valign="top">
@@ -176,11 +183,11 @@ function randomfacts_install()
         'title'         => 'randomfacts_all_bit',
         'template'      => $db->escape_string('
         <div class="randomfacts">
-        <h1>{$randomfacts[\'titel\']}</h1>
+        <h1>{$randomfacts-extended[\'titel\']}</h1>
         <div class="randomfacts-text">{$randomfacts[\'text\']}</div>   
         <div class="randomfacts-do">
-            <div class="randomfacts-edit"><a href="randomfacts.php?action=edit&id={$randomfacts[\'id\']}">[E]</a></div>
-            <div class="randomfacts-edit"><a href="randomfacts.php?action=delete&id={$randomfacts[\'id\']}">[X]</a></div>
+            <div class="randomfacts-edit"><a href="randomfacts-extended.php?action=edit&id={$randomfacts-extended[\'id\']}">[E]</a></div>
+            <div class="randomfacts-edit"><a href="randomfacts-extended.php?action=delete&id={$randomfacts-extended[\'id\']}">[X]</a></div>
         </div>
         </div>
         '),
@@ -198,32 +205,44 @@ function randomfacts_install()
         'template'      => $db->escape_string('
         <html>
         <head>
-        <title>{$settings[\'bbname\']} - Hintergrundinformationen</title>
+        <title>{$settings[\'bbname\']} - Random Facts Extended bearbeiten</title>
         {$headerinclude}
         </head>
         <body>
             {$header}
             <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
                 <tr>
-                    <td class="thead" colspan="2"><strong>Hintergrundinformationen</strong></td>
+                    <td class="thead" colspan="2"><strong>Random Facts Extended bearbeiten</strong></td>
                 </tr>
                 <tr>
                     <td class="trow1" width="25%" valign="top">
                     {$navigation}
                     </td>
                     <td class="trow1" align="center">
-                    <form action="randomfacts.php?action=do_edit&id={$randomfacts[\'id\']}" method="post">
+                    <form action="randomfacts-extended.php?action=do_edit&id={$randomfacts-extended[\'id\']}" method="post">
                         <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
                             <tr>
                                 <td class="thead" colspan="2">Fakt ändern</td>
                             </tr>
                             <tr>
                                 <td class="trow1">Überschrift</td>
-                                <td class="trow1"><input type="text" name="titel" value="{$randomfacts[\'titel\']}"/></td>
+                                <td class="trow1"><input type="text" name="titel" value="{$randomfacts-extended[\'titel\']}"/></td>
                             </tr>
                             <tr>
                                 <td class="trow1">Inhalt</td>
-                                <td class="trow1"><textarea name="text" rows="6" cols="100">{$randomfacts[\'text\']}</textarea></td>
+                                <td class="trow1"><textarea name="text" rows="6" cols="100">{$randomfacts-extended[\'text\']}</textarea></td>
+                            </tr>
+			    <tr>
+                                <td class="trow1">Bild</td>
+                                <td class="trow1"><textarea name="text" rows="6" cols="100">{$randomfacts-extended[\'image\']}</textarea></td>
+                            </tr>
+			    <tr>
+                                <td class="trow1">Keywords</td>
+                                <td class="trow1"><textarea name="text" rows="6" cols="100">{$randomfacts-extended[\'keywords\']}</textarea></td>
+                            </tr>
+			    <tr>
+                                <td class="trow1">Autor</td>
+                                <td class="trow1"><textarea name="text" rows="6" cols="100">{$randomfacts-extended[\'author\']}</textarea></td>
                             </tr>
                             <tr>
                                 <td class="trow1" colspan="2"><input type="submit" value="Absenden" /></td>
@@ -252,14 +271,14 @@ function randomfacts_install()
         'template'      => $db->escape_string('
         <html>
         <head>
-            <title>{$settings[\'bbname\']} - Hintergrundinformationen</title>
+            <title>{$settings[\'bbname\']} - Random Facts Extended hinzufügen</title>
             {$headerinclude}
         </head>
         <body>
             {$header}
             <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
                 <tr>
-                    <td class="thead" colspan="2"><strong>Hintergrundinformationen</strong></td>
+                    <td class="thead" colspan="2"><strong>Random Facts Extended hinzufügen</strong></td>
                 </tr>
                 <tr>
                     <td class="trow1" width="25%" valign="top">
@@ -267,7 +286,7 @@ function randomfacts_install()
                     </td>
                     <td class="trow1" align="center">
                         <form action="randomfacts.php?action=do_add" method="post">
-							<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
+			<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
                             <tr>
                                 <td class="thead" colspan="2">Fakt ändern</td>
                             </tr>
@@ -278,6 +297,18 @@ function randomfacts_install()
                             <tr>
                                 <td class="trow1">Inhalt</td>
                                 <td class="trow1"><textarea name="text" rows="6" cols="100"></textarea></td>
+                            </tr>
+			    <tr>
+                                <td class="trow1">Keywords</td>
+                                <td class="trow1"><input type="text" name="keywords" width="80%"></td>
+                            </tr>
+			    <tr>
+                                <td class="trow1">Bild</td>
+                                <td class="trow1"><input type="text" name="image" width="80%"></td>
+                            </tr>
+			    <tr>
+                                <td class="trow1">Autor</td>
+                                <td class="trow1"><input type="text" name="author" width="80%"></td>
                             </tr>
                             <tr>
                                 <td class="trow1" colspan="2"><center><input type="submit" value="Absenden" /></center></td>
@@ -305,9 +336,9 @@ function randomfacts_install()
         'template'      => $db->escape_string('
         <div class="randomfacts_navigation">
             <div class="thead">Navigation</div>
-            <div class="trow2"><a href="randomfacts.php">Random Facts</a></div>
-            <div class="trow1"><a href="randomfacts.php?action=all">Alle Facts</a></div>
-            <div class="trow2"><a href="randomfacts.php?action=add">Facts hinzufügen</a></div>
+            <div class="trow2"><a href="randomfacts-extended.php">Random Facts</a></div>
+            <div class="trow1"><a href="randomfacts-extended.php?action=all">Alle Facts</a></div>
+            <div class="trow2"><a href="randomfacts-extended.php?action=add">Facts hinzufügen</a></div>
         </div>
         '),
         'sid'           => '-2', // -1 Global, -2 Design
@@ -322,13 +353,13 @@ function randomfacts_install()
     $insert_array = array(
         'title'         => 'index_randomfacts',
         'template'      => $db->escape_string('
-        <tr><td class="tcat"><span class="smalltext"><strong>Random Facts</strong></span></td></tr>
+        <tr><td class="tcat"><span class="smalltext"><strong>Random Facts Extended</strong></span></td></tr>
         <tr>
         <td class="trow1">
             <div class="index_randomfacts">
-                    <div class="index_randomfacts-title">{$randomfact[\'titel\']}</div>
+                    <div class="index_randomfacts-title">{$randomfact-extended[\'titel\']}</div>
                     <div class="index_randomfacts-content">
-                        {$randomfact[\'text\']}	
+                        {$randomfact-extended[\'text\']}	
                     </div>
              </div>
         </td>
@@ -353,10 +384,11 @@ function randomfacts_install()
         
         // STYLESHEET HINZUFÜGEN
         $css = array(
-            'name'          => 'randomfacts.css',
+            'name'          => 'randomfacts-extended.css',
             'tid'           => 1,
             'attachedto'    => '',
             "stylesheet"    =>	'
+	    
 .randomfacts {
     display: flex;
 	flex-wrap: wrap;
@@ -402,7 +434,7 @@ function randomfacts_install()
 }
 		
 		',
-            'cachefile' => $db->escape_string(str_replace('/', '', 'randomfacts.css')),
+            'cachefile' => $db->escape_string(str_replace('/', '', 'randomfacts-extended.css')),
             'lastmodified' => time(),
         );
 
@@ -421,7 +453,7 @@ function randomfacts_install()
 function randomfacts_is_installed()
 {
 	global $db;
-        if($db->table_exists('randomfacts'))
+        if($db->table_exists('randomfacts-extended'))
         {
             return true;
         }
@@ -436,15 +468,15 @@ function randomfacts_uninstall()
     global $db;
       // Einstellungen Löschen
 
-      $db->delete_query('settings', "name LIKE 'randomfacts_%'");  
-      $db->delete_query('settinggroups', "name = 'randomfacts'");
+      $db->delete_query('settings', "name LIKE 'randomfacts-extended_%'");  
+      $db->delete_query('settinggroups', "name = 'randomfacts-extended'");
 
   
       // Eigene Tabelle erstellt löschen
   
-      if($db->table_exists('randomfacts'))
+      if($db->table_exists('randomfacts-extended'))
       {
-          $db->drop_table("randomfacts");
+          $db->drop_table("randomfacts-extended");
       }
 
       rebuild_settings();
@@ -452,14 +484,14 @@ function randomfacts_uninstall()
 
       // CSS löschen
     require_once MYBB_ADMIN_DIR."inc/functions_themes.php";
-    $db->delete_query("themestylesheets", "name = 'randomfacts.css'");
+    $db->delete_query("themestylesheets", "name = 'randomfacts-extended.css'");
     $query = $db->simple_select("themes", "tid");
     while($theme = $db->fetch_array($query)) {
         update_theme_stylesheet_list($theme['tid']);
     }
 
     // Templates löschen
-    $db->delete_query("templates", "title LIKE 'randomfacts%'");
+    $db->delete_query("templates", "title LIKE 'randomfacts-extended%'");
 }
 
 // Funktion zur Überprüfung des Installationsstatus; liefert true zurürck, wenn Plugin installiert, sonst false (optional).
@@ -468,7 +500,7 @@ function pluginname_is_installed()
        // Installationsüberprüfung Datenbank
 
        global $db, $cache, $mybb;
-       if($db->table_exists("randomfacts"))
+       if($db->table_exists("randomfacts-extended"))
        {
            return true;
        }  
@@ -478,7 +510,7 @@ function pluginname_is_installed()
        // Installationsüberprüfung Settings
    
        global $db, $cache, $mybb;
-       if(isset($mybb->settings['randomfacts']))
+       if(isset($mybb->settings['randomfacts-extended']))
        {
            return true;
        }
@@ -496,20 +528,20 @@ function randomfacts_deactivate()
     require MYBB_ROOT."/inc/adminfunctions_templates.php";
 
     // VARIABLEN ENTFERNEN
-    find_replace_templatesets("index_boardstats", "#".preg_quote('{$randomfacts}')."#i", '', 0);
+    find_replace_templatesets("index_boardstats", "#".preg_quote('{$randomfacts-extended}')."#i", '', 0);
 
 }
 
-$plugins->add_hook("global_start", "randomfacts_global");
+$plugins->add_hook("global_start", "randomfacts-extended_global");
  // Random Fact auf dem Index ausgeben
- function randomfacts_global() {
+ function randomfacts-extended_global() {
 
-    global $db, $randomfacts, $templates;
+    global $db, $randomfacts-extended, $templates, $global;
 
     $randomfacts_query = $db->query("SELECT * FROM ".TABLE_PREFIX."randomfacts ORDER BY rand() LIMIT 1");
 
-    $randomfact = $db->fetch_array($randomfacts_query);
+    $randomfact = $db->fetch_array($randomfacts-extended_query);
   
-    eval("\$randomfacts = \"".$templates->get("index_randomfacts")."\";");
+    eval("\$randomfacts-extended = \"".$templates->get("index_randomfacts")."\";");
  }
 
