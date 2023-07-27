@@ -1,8 +1,8 @@
-# MyBB-Randomfacts_on_Index
+# MyBB-Randomfacts_on_Index Extended
 A MyBB Plugin which adds a Database for facts and shows them randomly on the index or anywhere else.
 
 
-###################### Random Facts on the Index #############################
+###################### Random Facts on the Index Extended #############################
 
 See English below
 
