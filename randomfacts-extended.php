@@ -98,10 +98,16 @@ if($mybb->input['action'] == "edit") {
     $id      = $mybb->input['id'];
     $titel   = $mybb->get_input('titel');
     $text    = $mybb->get_input('text');
+    $keywords= $mybb->get_input('keywords');
+    $image    = $mybb->get_input('image');
+    $author    = $mybb->get_input('author');
  
     $new_array = [
-       "titel"  => $db->escape_string($titel),
-       "text"   => $db->escape_string($text)
+       "titel"      => $db->escape_string($titel),
+       "text"       => $db->escape_string($text),
+       "keywords"   => $db->escape_string($keywords),
+       "image"      => $db->escape_string($image),
+       "author"     => $db->escape_string($author)
     ];
  
     $db->update_query("randomfacts-extended", $new_array, "id = '$id'");
