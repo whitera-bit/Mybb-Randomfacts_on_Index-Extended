@@ -31,9 +31,9 @@ function randomfacts_install()
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `titel` varchar(140) NOT NULL,
         `text` longtext NOT NULL,
-	`keywords`,
- 	`image`,
-  	`author`,
+	`keywords` varchar(255),
+ 	`image` longblob,
+  	`author` varchar(255),
         PRIMARY KEY (`id`),
         KEY `id` (`id`)
         )
