@@ -14,7 +14,7 @@ function randomfacts_info()
 		"description"	    	=> "Erstellt eine Datenbank, in die Random Fakts oder Informationen eingetragen und dann zufällig auf dem Index ausgegeben werden können.",
 		"website"	        => "Webseite des Plugins (Herstellerseite)",
 		"author"	        => "White_Rabbit (Tom)",
-		"authorsite"	   	=> "Webseite des Erstellers",
+		"authorsite"	   	=> "https://epic.quodvide.de/member.php?action=profile&uid=2",
 		"version"	        => "1.0",
 		"compatibility"    	=> "18*"
     );
